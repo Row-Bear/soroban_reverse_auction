@@ -10,7 +10,7 @@
     "astro": "astro",
     "clean": "rm -rf .soroban node_modules/.vite",
     "network": "soroban config network add --global testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'",
-    "bindings": "soroban contract bindings typescript --network testnet ---overwrite -contract-id $(cat ../.soroban/auction-id) --output-dir node_modules/soroban_auction_client",
+    "bindings": "soroban contract bindings typescript --network testnet --overwrite -contract-id $(cat ../.soroban/auction-id) --output-dir node_modules/soroban_auction_client",
     "postinstall": "npm run network && npm run bindings"
     
   },
