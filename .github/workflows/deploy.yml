@@ -22,7 +22,24 @@ jobs:
         uses: baptiste0928/cargo-install@v2.2.0
         with:
          crate: soroban-cli
-      
+      - name: add target
+        run: rustup target add wasm32-unknown-unknown
+      - name: add soroban network config
+        run: soroban config network add testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'
+      - name: change dir
+        run: cd soroban_auction
+      - name: add soroban network config
+        run: soroban config network add testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'
+      - name: add soroban identity
+        run: soroban config identity generate deployer 
+      - name: fund soroban identity
+        run: soroban config identity fund deployer --network testnet
+      - name: soroban build contract
+        run: soroban contract build
+      - name: deploy contract
+        run: soroban contract deploy --network testnet --source deployer --wasm target/wasm32-unknown-unknown/release/soroban_auction.wasm > ../.soroban/auction-id
+      - name: change dir
+        run: cd soroban_auction
       - name: Checkout your repository using git
         uses: actions/checkout@v3
       - name: Install, build, and upload your site

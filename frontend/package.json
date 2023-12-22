@@ -9,14 +9,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "clean": "rm -rf .soroban node_modules/.vite",
-    "target": "rustup target add wasm32-unknown-unknown",
     "network": "soroban config network add --global testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'",
-    "create_deployer": "soroban config identity generate deployer && soroban config identity fund deployer --network testnet",
-    "deploy:auctiom": "soroban contract deploy --wasm target/wasm32-unknown-unknown/release/hello_soroban.wasm --source deployer --network testnet > ../.soroban/auction-id",
-    "deploy": "npm run deploy:auction",
-    "bindings": "soroban contract bindings typescript --network testnet --contract-id $(cat ../.soroban/auction-id) --output-dir node_modules/soroban_auction_client",
-    "setup": "npm run network && cd ../soroban_auction && soroban contract build && if [ ! -d ../.soroban ]; then npm run create_deployer && npm run deploy; fi && cd ..",
-    "postinstall": "npm run target && if [ ! -d ../.soroban ]; then npm run setup; fi && npm run bindings"
+    "bindings": "soroban contract bindings typescript --network testnet ---overwrite -contract-id $(cat ../.soroban/auction-id) --output-dir node_modules/soroban_auction_client",
+    "postinstall": "npm run network && npm run bindings"
     
   },
   "dependencies": {
