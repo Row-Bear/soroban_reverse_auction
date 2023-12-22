@@ -14,7 +14,7 @@
     "contract_build": "cd ../soroban_auction && soroban contract build",
     "create_dir": "if [ ! -d ../.soroban ]; then mkdir ../.soroban; fi",
     "deploy": "soroban contract deploy --network testnet --source deployer --wasm ../soroban_auction/target/wasm32-unknown-unknown/release/soroban_auction.wasm > ../.soroban/auction_id",
-    "bindings": "soroban contract bindings typescript --network testnet --overwrite --contract-id $(cat ../.soroban/auction-id) --output-dir ../frontend/node_modules/soroban_auction_client",
+    "bindings": "soroban contract bindings typescript --network testnet --overwrite --contract-id $(cat ../.soroban/auction_id) --output-dir ../frontend/node_modules/soroban_auction_client",
     "postinstall": "npm run network && npm run create_deployer && npm run contract_build && npm run create_dir && npm run deploy && npm run bindings"
 
   },
