@@ -2,7 +2,7 @@
 interface Props {
 	title: string;
 }
-Astro.response.headers.set({ 'Content-Type': 'text/javascript;charset=utf-8'});
+Astro.response.headers.set('Content-Type', 'text/javascript;charset=utf-8');
 const { title } = Astro.props;
 ---
 
