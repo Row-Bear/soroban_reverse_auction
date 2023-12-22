@@ -3,8 +3,8 @@
 
 
 <p align="center">
-<a href="https://row-bear.github.io.">Live Demo</a><br/>
-Soroban | Rust
+<a href="https://row-bear.github.io/soroban_reverse_auction/">Live Demo</a><br/>
+Soroban | Rust | Astro 
 </p>
 
 ## Introduction
