@@ -34,10 +34,6 @@ jobs:
         run: soroban config identity fund deployer --network testnet
       - name: Checkout your repository using git
         uses: actions/checkout@v3
-      - name: soroban build contract
-        run: soroban contract build
-      - name: deploy contract
-        run: soroban contract deploy --network testnet --source deployer --wasm target/wasm32-unknown-unknown/release/soroban_auction.wasm > ../.soroban/auction-id
       - name: Install, build, and upload your site
         uses: withastro/action@v1
         with:
