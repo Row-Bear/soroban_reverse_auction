@@ -1,0 +1,238 @@
+<strong>Soroban Reverse Auction</strong><br >
+In a Reverse Dutch Auction, the bidding starts low, and increases over time. 
+When the price reaches a level at which someone is willing to sell, the auction ends.<br>
+Soroban Reverse Auction brings this concept to Soroban! <br>
+Connect your Testnet account to Freighter to try it out, or read more on <a href="https://github.com/Row-Bear/soroban_auction"> github</a> .<br>
+<br>
+Current status: <strong id="auction-status" aria-live="polite">???</strong><br>
+  <br>
+  <form method="POST" id="setup-form">
+  <label>
+    What NFT do you want to buy? :
+    <input style="margin-left:35px" type="text" name="auctionAsset"  id="auctionAsset" value="CADJ2CD4QKZSUFOB2HVW3IIQ4LYPG7MLAJU3WFE54ZT5WRHRPNEXVQMM"/>
+  </label><br> 
+  <label>
+    In what asset do you want to pay? :
+    <input style="margin-left:10px" type="text" name="auctionCounterAsset"  id="auctionCounterAsset" value="CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"/>
+  </label><br> 
+  <label>
+    What is the starting bid? :
+    <input style="margin-left:248px" type="number" name="auctionStartBid" id="auctionStartBid" value=1000 class="price" />
+  </label><br> 
+  <label>
+    By how much should the bid increase? :           
+    <input style="margin-left:126px" type="number" name="auctionBidIncreaseAmount" id="auctionBidIncreaseAmount" value=100 class="price"/>
+  </label><br> 
+  <label>
+    How often (in ledgers) should the bid increase? : 
+    <input style="margin-left:49px" type="number" name="auctionBidIncreaseInterval" id="auctionBidIncreaseInterval" value=10 />
+  </label><br> 
+  <label>
+    How many times in total should the bid increase? :
+    <input style="margin-left:30px" type="number" name="auctionBidIncreaseTimes" id="auctionBidIncreaseTimes" value=100 class="price" />
+  </label><br> 
+  <label>Maximum price will be: <strong id="max-price" aria-live="polite">11000</strong> </label>
+  </form>
+  <br>
+  <button start-auction aria-controls="auction-start">Start Auction</button>
+<br />
+<br />
+
+<button bid-info aria-controls="bid-info">Get Bid Info</button> <br>
+Current bid is : <strong id="current_bid" aria-live="polite">???</strong><br />
+Bid will become : <strong id="next_bid" aria-live="polite">???</strong> in <strong id="next_bid_ledgers" aria-live="polite">???</strong> ledgers<br />
+Maximum bid will be  : <strong id="max_bid" aria-live="polite">???</strong> at ledger : <strong id="max_bid_ledger" aria-live="polite">???</strong>  <br />
+<br>
+
+<button sell-button aria-controls="sell-button">Sell my asset!</button> <br>
+
+<br>
+<button close-button aria-controls="close-button">Close the auction</button> <br>
+
+<br>
+<button reset-button aria-controls="reset-button">Reset the auction</button> <br>
+For this demo, it's possible to reset the auction after closing it. <br>
+<br>
+<br>
+
+<script>
+  
+  import { Contract, networks } from "soroban_auction_client";
+  import { getUserInfo } from '@stellar/freighter-api';
+
+
+  async function getPk() {
+    const { publicKey } = await getUserInfo();
+    return publicKey;
+  }
+  const address = await getPk();
+     const reverse_auction = new Contract({
+      ...networks.testnet,
+      rpcUrl: "https://soroban-testnet.stellar.org", 
+      });
+ 
+  const start_button = document.querySelector("[start-auction]");
+  const auctionStatus = document.querySelector("#auction-status");
+
+
+
+  const maxPrice = document.querySelector("#max-price");
+  
+
+  // Find all input fields with the `price` class on the page.
+  const inputs = document.querySelectorAll('input.price');
+
+  // Look for change in input fields related to max price.
+  inputs.forEach((input) => {
+    input.addEventListener('change', () => {
+      const auctionStartBid = document.querySelector('#auctionStartBid').value;
+      const auctionBidIncreaseAmount = document.querySelector('#auctionBidIncreaseAmount').value;
+      const auctionBidIncreaseTimes = document.querySelector('#auctionBidIncreaseTimes').value;
+      const max_price = BigInt(auctionBidIncreaseAmount) * BigInt(auctionBidIncreaseTimes) + BigInt(auctionStartBid);
+
+      // Show the max price
+      maxPrice.innerHTML = max_price;
+    });
+  });
+
+  // Actions when the start button is pressed
+  start_button.addEventListener("click", async () => {
+    start_button.disabled = true;
+    start_button.classList.add("loading");
+    auctionStatus.innerHTML =
+      auctionStatus.innerHTML +
+      '<span class="visually-hidden"> – updating…</span>';
+    const auctionHost = address;
+    const auctionAsset = document.querySelector('#auctionAsset').value;
+    const auctionCounterAsset = document.querySelector('#auctionCounterAsset').value;
+    const auctionStartBid = document.querySelector('#auctionStartBid').value;
+    const auctionBidIncreaseAmount = document.querySelector('#auctionBidIncreaseAmount').value;
+    const auctionBidIncreaseInterval = document.querySelector('#auctionBidIncreaseInterval').value;
+    const auctionBidIncreaseTimes = document.querySelector('#auctionBidIncreaseTimes').value;
+
+    const tx = await reverse_auction.setupAuction(
+      {host: auctionHost,
+      auction_asset: auctionAsset,
+      counter_asset: auctionCounterAsset,
+      starting_bid: BigInt(auctionStartBid),
+      bid_incr_amount: BigInt(auctionBidIncreaseAmount),
+      bid_incr_interval: Number(auctionBidIncreaseInterval),
+      bid_incr_times: Number(auctionBidIncreaseTimes)
+    }
+    );
+    const { result } = await tx.signAndSend();
+
+    // Only use `innerHTML` with contract values you trust!
+    // Blindly using values from an untrusted contract opens your users to script injection attacks!
+    auctionStatus.innerHTML = String(result.unwrap().tag);
+
+    start_button.disabled = false;
+    start_button.classList.remove("loading");
+    });
+
+    const bid_button = document.querySelector("[bid-info]");
+    const current_bid = document.querySelector("#current_bid");
+    const next_bid = document.querySelector("#next_bid");
+    const next_bid_ledgers = document.querySelector("#next_bid_ledgers");
+    const max_bid = document.querySelector("#max_bid");
+    const max_bid_ledger = document.querySelector("#max_bid_ledger");
+
+
+    // Actions when the get_bid_info is pressed
+    bid_button.addEventListener("click", async () => {
+    bid_button.disabled = true;
+    bid_button.classList.add("loading");
+    current_bid.innerHTML =
+    current_bid.innerHTML +
+      '<span class="visually-hidden"> – updating…</span>';
+
+      const tx = await reverse_auction.getBidInfo(
+      {
+    }
+    );
+    const { result } = tx;
+
+    // Only use `innerHTML` with contract values you trust!
+    // Blindly using values from an untrusted contract opens your users to script injection attacks!
+    current_bid.innerHTML = String(result.unwrap().current_bid);
+    next_bid.innerHTML = String(result.unwrap().next_bid);
+    next_bid_ledgers.innerHTML = String(result.unwrap().ledgers_to_next_increase);
+    max_bid.innerHTML = String(result.unwrap().max_bid);
+    max_bid_ledger.innerHTML = String(result.unwrap().max_bid_ledger);
+
+    bid_button.disabled = false;
+    bid_button.classList.remove("loading");
+  });
+
+  const sell_button = document.querySelector("[sell-button]");
+  const sell_status = document.querySelector("#sell-status");
+  // Actions when the sell button is pressed
+      sell_button.addEventListener("click", async () => {
+      sell_button.disabled = true;
+      sell_button.classList.add("loading");
+      auctionStatus.innerHTML =
+      auctionStatus.innerHTML +
+        '<span class="visually-hidden"> – updating…</span>';
+
+        const tx = await reverse_auction.sellAsset(
+        { seller: address
+      }
+      );
+      const { result } = await tx.signAndSend();
+
+      // Only use `innerHTML` with contract values you trust!
+      // Blindly using values from an untrusted contract opens your users to script injection attacks!
+      auctionStatus.innerHTML = String(result.unwrap().tag);
+
+      sell_button.disabled = false;
+      sell_button.classList.remove("loading");
+    });
+
+    const close_button = document.querySelector("[close-button]");
+    const close_status = document.querySelector("#close-status");
+    // Actions when the sell button is pressed
+        close_button.addEventListener("click", async () => {
+        close_button.disabled = true;
+        close_button.classList.add("loading");
+        auctionStatus.innerHTML =
+        auctionStatus.innerHTML +
+          '<span class="visually-hidden"> – updating…</span>';
+
+          const tx = await reverse_auction.closeAuction(
+          {
+        }
+        );
+        const { result } = await tx.signAndSend();
+
+        // Only use `innerHTML` with contract values you trust!
+        // Blindly using values from an untrusted contract opens your users to script injection attacks!
+        auctionStatus.innerHTML = String(result.unwrap().tag);
+
+        close_button.disabled = false;
+        close_button.classList.remove("loading");
+      });
+
+    const reset_button = document.querySelector("[reset-button]");
+    const reset_status = document.querySelector("#reset-status");
+    // Actions when the sell button is pressed
+        reset_button.addEventListener("click", async () => {
+        reset_button.disabled = true;
+        reset_button.classList.add("loading");
+        auctionStatus.innerHTML =
+        auctionStatus.innerHTML +
+          '<span class="visually-hidden"> – updating…</span>';
+
+          const tx = await reverse_auction.resetAuction(
+          {
+        }
+        );
+        const { result } = await tx.signAndSend();
+
+        // Only use `innerHTML` with contract values you trust!
+        // Blindly using values from an untrusted contract opens your users to script injection attacks!
+        auctionStatus.innerHTML = String(result.unwrap().tag);
+
+        reset_button.disabled = false;
+        reset_button.classList.remove("loading");
+      });
+</script>

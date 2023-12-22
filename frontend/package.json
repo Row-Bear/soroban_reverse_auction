@@ -1,0 +1,17 @@
+{
+  "name": "soroban-reverse-auction",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "postinstall": "soroban contract bindings typescript --network testnet --contract-id $(cat ../.soroban/soroban_auction) --output-dir node_modules/soroban_auction_client"
+  },
+  "dependencies": {
+    "@stellar/freighter-api": "^1.7.1",
+    "astro": "^4.0.7"
+  }
+}
