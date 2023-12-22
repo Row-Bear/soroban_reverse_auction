@@ -3,32 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import ConnectFreighter from '../components/ConnectFreighter.astro';
 import ReverseAuction from '../components/ReverseAuction.astro'
-
-
-if (Astro.request.method === "POST") {
-  try {
-    const data = await Astro.request.formData();
-    const auctionAsset = data.get("auctionAsset");
-	const auctionCounterAsset = data.get("auctionCounterAsset");
-	const auctionStartBid = data.get("auctionStartBid");
-	const auctionBidIncreaseAmount = data.get("auctionBidIncreaseAmount");
-	const auctionBidIncreaseInterval = data.get("auctionBidIncreaseInterval");
-	const auctionBidIncreaseTimes = data.get("auctionBidIncreaseTimes");
-    // Do something with the data
-	console.log(auctionAsset);
-	console.log(auctionCounterAsset);
-	console.log(auctionStartBid);
-	console.log(auctionBidIncreaseAmount);
-	console.log(auctionBidIncreaseInterval);
-	console.log(auctionBidIncreaseTimes);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-    }
-  }
-}
-
-
+Astro.response.headers.set({ 'Content-Type': 'text/javascript;charset=utf-8'});
 ---
 
 <Layout title="Soroban Reverse Auction">
