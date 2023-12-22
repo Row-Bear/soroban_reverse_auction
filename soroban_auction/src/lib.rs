@@ -32,8 +32,6 @@ impl AuctionContract {
         // Panic if the auction already has a State (Running, Fulfilled, Closed or Aborted)
         if  env.storage().instance().has(&DataKey::State) {
             return Ok(Status::AuctionAlreadyInitialised);
-            //panic_with_error!(&env, Error::AuctionAlreadyIntitialised);
-            //return Err(Error::AuctionAlreadyIntitialised)
         }
 
         // Check if the starting bid and bid-increase amount are positive
@@ -42,7 +40,6 @@ impl AuctionContract {
         }
         
         // Bump the instance to ~ max auction duration + a bit more
-
         let required_ttl: u32 = bid_incr_times * bid_incr_interval;
         env.storage().instance().extend_ttl(required_ttl, required_ttl + 1000);
 
@@ -50,10 +47,12 @@ impl AuctionContract {
         // The auction holds that balance until it is either Fullfilled or Aborted
         let max_increase: i128 = bid_incr_amount * bid_incr_times as i128;
         let max_price: i128 = starting_bid + max_increase;
-        let transfer = token::Client::new(&env, &counter_asset).try_transfer(&host, &env.current_contract_address(), &max_price);
+        let transfer = token::Client::new(&env, &counter_asset)
+                                        .try_transfer(&host, &env.current_contract_address(), &max_price);
         if transfer.is_err() {
             return Ok(Status::TransferError)
         }
+        
         // Set auction details into storage
         let new_auction_data = AuctionData {
             host: host,
@@ -151,18 +150,13 @@ impl AuctionContract {
     pub fn sell_asset(env: Env, seller: Address ) -> Result<Status, Error> {
 
         // You can only sell the asset if the auction is Running
-        
         if  !env.storage().instance().has(&DataKey::State) {
             return Ok(Status::AuctionNotInitialised);
-            //return Err(Error::AuctionNotInitialised);
-            //panic_with_error!(&env, Error::AuctionNotInitialised);
         } else {
             let auction_state: State = env.storage().instance().get(&DataKey::State).unwrap();
 
             if auction_state != State::Running {
                 return Ok(Status::AuctionNotRunning);
-                //return Err(Error::AuctionNotRunning);
-                //panic_with_error!(&env, Error::AuctionNotRunning);
             }
         }
 
@@ -179,15 +173,18 @@ impl AuctionContract {
         
         // The amount of the auction asset is currently hardcoded to 1 stroop (NFT)
         // Transfer that 1 stroop from the seller to the contract
-        let transfer = token::Client::new(&env, &auction_asset).try_transfer(&seller, &env.current_contract_address(), &1);
+        let transfer = token::Client::new(&env, &auction_asset)
+                                                .try_transfer(&seller, &env.current_contract_address(), &1);
         if transfer.is_err() {
             return Ok(Status::TransferError)
         }
         // Pay the seller the current bid/price
-        let transfer = token::Client::new(&env, &counter_asset).try_transfer(&env.current_contract_address(), &seller, &current_price);
+        let transfer = token::Client::new(&env, &counter_asset)
+                                                .try_transfer(&env.current_contract_address(), &seller, &current_price);
         if transfer.is_err() {
             return Ok(Status::TransferError)
         }
+
         // Set the auction State to Fulfilled
         env.storage().instance().set(&DataKey::State, &State::Fulfilled);
 
@@ -206,15 +203,11 @@ impl AuctionContract {
         // Only allow termination if the auction is either running or finished
         if  !env.storage().instance().has(&DataKey::State) {
             return Ok(Status::AuctionNotInitialised);
-            //return Err(Error::AuctionNotInitialised)
-            //panic_with_error!(&env, Error::AuctionNotInitialised);
         } else {
             let auction_state: State = env.storage().instance().get(&DataKey::State).unwrap();
 
             if auction_state == State::Closed || auction_state == State::Aborted{
                 return Ok(Status::AuctionAlreadyClosed);
-                //return Err(Error::AuctionNotRunning)
-                //panic_with_error!(&env, Error::AuctionNotRunning);
             }
         }
         
@@ -233,7 +226,8 @@ impl AuctionContract {
         
         if auction_state == State::Running {
             // Auction is running, so pay the counter_asset back to the host and set status to Aborted
-            let transfer = token::Client::new(&env, &counter_asset).try_transfer(&env.current_contract_address(), &host, &counter_asset_balance);
+            let transfer = token::Client::new(&env, &counter_asset)
+                                            .try_transfer(&env.current_contract_address(), &host, &counter_asset_balance);
             if transfer.is_err() {
                 return Ok(Status::TransferError)
             }
@@ -245,14 +239,16 @@ impl AuctionContract {
             let auction_asset: Address = auction_data.asset;
             let auction_asset_balance: i128 = token::Client::new(&env, &auction_asset).balance(&env.current_contract_address());
 
-            let transfer = token::Client::new(&env, &auction_asset).try_transfer(&env.current_contract_address(), &host, &auction_asset_balance);
+            let transfer = token::Client::new(&env, &auction_asset)
+                                            .try_transfer(&env.current_contract_address(), &host, &auction_asset_balance);
             if transfer.is_err() {
                 return Ok(Status::TransferError)
             }
 
             // If any funds remain, return them to the host
             if counter_asset_balance > 0 {
-                let transfer = token::Client::new(&env, &counter_asset).try_transfer(&env.current_contract_address(), &host, &counter_asset_balance);
+                let transfer = token::Client::new(&env, &counter_asset)
+                                            .try_transfer(&env.current_contract_address(), &host, &counter_asset_balance);
                 if transfer.is_err() {
                     return Ok(Status::TransferError)
                 }
