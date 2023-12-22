@@ -3,7 +3,7 @@
 
 
 <p align="center">
-<a href="https://google.com/">Live Demo</a><br/>
+<a href="https://row-bear.github.io.">Live Demo</a><br/>
 Soroban | Rust
 </p>
 
