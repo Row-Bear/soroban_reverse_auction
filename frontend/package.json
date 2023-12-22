@@ -13,10 +13,10 @@
     "create_deployer": "soroban config identity generate deployer && soroban config identity fund deployer --network testnet",
     "contract_build": "cd ../soroban_auction && soroban contract build",
     "create_dir": "if [ ! -d ../.soroban ]; then mkdir ../.soroban; fi",
-    "deploy": "soroban contract deploy --network testnet --source deployer --wasm target/wasm32-unknown-unknown/release/soroban_auction.wasm > ../.soroban/auction_id",
+    "deploy": "soroban contract deploy --network testnet --source deployer --wasm ./target/wasm32-unknown-unknown/release/soroban_auction.wasm > ../.soroban/auction_id",
     "bindings": "cd ../frontend && soroban contract bindings typescript --network testnet --overwrite -contract-id $(cat ../.soroban/auction-id) --output-dir node_modules/soroban_auction_client",
     "postinstall": "npm run network && npm run create_deployer && npm run contract_build && npm run create_dir && npm run deploy && npm run bindings"
-    
+
   },
   "dependencies": {
     "@stellar/freighter-api": "^1.7.1",
