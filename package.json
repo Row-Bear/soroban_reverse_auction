@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@stellar/freighter-api": "^1.7.1",
-    "astro": "^4.0.7"
-  }
-}
