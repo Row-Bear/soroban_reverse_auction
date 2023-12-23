@@ -2,5 +2,5 @@
 [[headers]]
   for = "/*"
   [headers.values]
-      Content-Type = "application/javascript; charset=utf-8"
+      # Content-Type = "application/javascript; charset=utf-8"
       X-Content-Type-Options = "allow"
