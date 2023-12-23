@@ -14,10 +14,10 @@
     "add_target": "rustup target add wasm32-unknown-unknown",
     "network": "soroban config network add --global testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'",
     "create_deployer": "soroban config identity generate deployer && soroban config identity fund deployer --network testnet",
-    "contract_build": "cd ../soroban_auction && soroban contract build",
+    "contract_build": "cd soroban_auction && soroban contract build",
     "create_dir": "if [ ! -d ../.soroban ]; then mkdir ../.soroban; fi",
     "deploy": "soroban contract deploy --network testnet --source deployer --wasm ../soroban_auction/target/wasm32-unknown-unknown/release/soroban_auction.wasm > ../.soroban/auction_id",
-    "bindings": "soroban contract bindings typescript --network testnet --overwrite --contract-id $(cat ../.soroban/auction_id) --output-dir ../node_modules/soroban_auction_client",
+    "bindings": "soroban contract bindings typescript --network testnet --overwrite --contract-id $(cat ../.soroban/auction_id) --output-dir ../node_modules/soroban_auction_client" ,
     "postinstall": "npm run install_rustup && npm run install_cli && npm run add_target && npm run network && npm run create_deployer && npm run contract_build && npm run create_dir && npm run deploy && npm run bindings"
 
   },
