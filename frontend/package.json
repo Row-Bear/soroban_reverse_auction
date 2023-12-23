@@ -9,7 +9,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "clean": "rm -rf .soroban node_modules/.vite",
-    "install_cli": "cargo install soroban cli",
+    "install_cli": "cargo install soroban-cli",
     "add_target": "rustup target add wasm32-unknown-unknown",
     "network": "soroban config network add --global testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'",
     "create_deployer": "soroban config identity generate deployer && soroban config identity fund deployer --network testnet",
