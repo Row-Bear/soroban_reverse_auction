@@ -18,20 +18,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: install soroban-cli
-        uses: baptiste0928/cargo-install@v2.2.0
-        with:
-         crate: soroban-cli
-      - name: add target
-        run: rustup target add wasm32-unknown-unknown
-      - name: add soroban network config
-        run: soroban config network add testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'
-      - name: add soroban network config
-        run: soroban config network add testnet --rpc-url https://soroban-testnet.stellar.org --network-passphrase 'Test SDF Network ; September 2015'
-      - name: add soroban identity
-        run: soroban config identity generate deployer 
-      - name: fund soroban identity
-        run: soroban config identity fund deployer --network testnet
       - name: Checkout your repository using git
         uses: actions/checkout@v3
       - name: Install, build, and upload your site
