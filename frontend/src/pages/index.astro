@@ -6,7 +6,7 @@ import ReverseAuction from '../components/ReverseAuction.astro'
 Astro.response.headers.set('content-type', 'application/javascript;charset=utf-8');
 ---
 
-<Layout title="Soroban Reverse Auction">
+<Layout title="Soroban Reverse Auction" client:load>
 	<main>
 		<svg
 			class="astro-a"
