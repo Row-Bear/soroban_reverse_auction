@@ -3,7 +3,7 @@
 
 
 <p align="center">
-<a href="https://row-bear.github.io/soroban_reverse_auction/">Live Demo</a><br/>
+<a href="https://inquisitive-puppy-579037.netlify.app/">Live Demo</a><br/>
 Soroban | Rust | Astro 
 </p>
 
@@ -348,12 +348,8 @@ This repository has the setup already done, so you can clone it and go from ther
 
 If you want to start from scratch, follow these steps:
 
-First, we need to change the current directory to the frontend folder (create it if you need it):
-```bash
-cd ../frontend
-```
 
-Then, we start the Astro project:
+First, we start the Astro project (make sure you are in the workspace root):
 ```bash
 npm create astro@4.0.1 soroban-reverse-auction -- --template basics --install --no-git --typescript strictest
 ```
@@ -369,7 +365,7 @@ Generate the bindings for our contract:
 ```bash
 soroban contract bindings typescript \
   --network testnet \
-  --contract-id $(cat ../.soroban/soroban_auction) \
+  --contract-id $(cat .soroban/soroban_auction) \
   --output-dir node_modules/soroban_auction_client
 ```
 Add a line to frontend/package.json under scripts:
@@ -410,7 +406,7 @@ The fields are pre-filled, but beware that the NFT contract will not be the same
 So, replace the value in that field with
 
 ```bash
-cat ../.soroban/nft_contract
+cat .soroban/nft_contract
 ```
 
 You can change the price fields, and the label below will show the maximum price.
