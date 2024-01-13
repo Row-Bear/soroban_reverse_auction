@@ -63,6 +63,7 @@ rustup target add wasm32-unknown-unknown
 ```bash
 cargo install soroban-cli
 ```
+Note: commands below assume version 20.2.0. If you have an older version, you need to run an extra command to fund each generated account.
 
 3. Configure Soroban CLI to work with Testnet:
 
@@ -76,12 +77,10 @@ soroban config network add --global testnet \
 4. Create and fund two Identities on Testnet:
 
 ```bash
-soroban config identity generate --global buyer
-soroban config identity fund buyer --network testnet
+soroban config identity generate --global buyer --network testnet
 ```
 ```bash
-soroban config identity generate --global seller
-soroban config identity fund seller --network testnet
+soroban config identity generate --global seller --network testnet
 ```
 
 5. Use Soroban CLI to build (compile) the contract from Rust into .wasm
@@ -125,8 +124,7 @@ To demonstrate the auction, we'll use 1 unit (stroop) of a wrapped Stellar asset
 We'll need to make sure the seller holds 1 stroop of it, and that the buyer is able to receive it.
 First we create, fund and store the NFT issuer address:
 ```bash
-soroban config identity generate --global NFT
-soroban config identity fund NFT --network testnet
+soroban config identity generate --global NFT --network testnet
 soroban config identity address NFT > ../.soroban/nft_issuer
 ```
 Then, we wrap the token, so it exists on Soroban:
