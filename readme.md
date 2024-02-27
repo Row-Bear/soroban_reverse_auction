@@ -68,7 +68,7 @@ Note: commands below assume version 20.2.0. If you have an older version, you ne
 3. Configure Soroban CLI to work with Testnet:
 
 ```bash
-soroban config network add --global testnet \
+soroban network add --global testnet \
   --rpc-url https://soroban-testnet.stellar.org \
   --network-passphrase "Test SDF Network ; September 2015"
 ```
@@ -77,10 +77,10 @@ soroban config network add --global testnet \
 4. Create and fund two Identities on Testnet:
 
 ```bash
-soroban config identity generate --global buyer --network testnet
+soroban keys generate --global buyer --network testnet
 ```
 ```bash
-soroban config identity generate --global seller --network testnet
+soroban keys generate --global seller --network testnet
 ```
 
 5. Use Soroban CLI to build (compile) the contract from Rust into .wasm
@@ -90,7 +90,7 @@ cd soroban_auction
 soroban contract build
 ```
 
-6. Deploy the Contract to Futurenet:
+6. Deploy the Contract to Testnet:
 
 ```bash
 soroban contract deploy \
@@ -114,7 +114,7 @@ soroban lab token wrap --network testnet --asset native > .soroban/native_asset
 If someone has already wrapped the native asset, the above command will fail, and somewhere in the response you will see `data:["contract already exists"`.
 No worries, then we just use:
 ```bash
-soroban lab token id --network testnet --asset native > ../.soroban/native_asset
+soroban lab token id --network testnet --source-account buyer --asset native > ../.soroban/native_asset
 ```
 to find the ID, and store that ID locally.
 
@@ -124,8 +124,8 @@ To demonstrate the auction, we'll use 1 unit (stroop) of a wrapped Stellar asset
 We'll need to make sure the seller holds 1 stroop of it, and that the buyer is able to receive it.
 First we create, fund and store the NFT issuer address:
 ```bash
-soroban config identity generate --global NFT --network testnet
-soroban config identity address NFT > ../.soroban/nft_issuer
+soroban keys generate --global NFT --network testnet
+soroban keys address NFT > ../.soroban/nft_issuer
 ```
 Then, we wrap the token, so it exists on Soroban:
 ```bash
@@ -146,7 +146,7 @@ It's possible to do the below steps in a combined transaction for both accounts.
 First, we set up the trustline for the seller. So, as the Source account, provide the public key of the seller account.
 What it is?
 ```bash
-soroban config identity address seller
+soroban keys address seller
 ```
 Make sure to click the 'Fetch next sequence number' button:
 ![](./img/Lab-Fetch-Sequence.png)
@@ -158,13 +158,13 @@ In the 'Asset Code' box, type 'NFT':
 Then, we need to fill in the issuer address. We have generated (and saved) it before.
 Let's get it back so you can copy and paste it:
 ```bash
-soroban config identity address NFT
+soroban keys address NFT
 ```
 With that filled in, we're almost there. We can move on to Sign the transaction:
 ![](./img/Lab-Sign-Transaction.png)
 For this, we'll need the secret key of the seller account:
 ```bash
-soroban config identity show seller
+soroban keys show seller
 ```
 And we can paste that into the field:
 ![](./img/Lab-Secret-Key.png)
@@ -178,9 +178,9 @@ Now, do it again for the Buyer. You'll need the following keys, and just follow 
 After that, we get back to Soroban!
 
 ```bash
-soroban config identity address buyer
-soroban config identity address NFT
-soroban config identity show buyer
+soroban keys address buyer
+soroban keys address NFT
+soroban keys show buyer
 ```
 
 10. Provide the seller with the NFT to sell.
@@ -391,8 +391,8 @@ In this case, it will work with the auction contract you deployed to Testnet.
 To interact with it, you will need to install Freigher extension in the browser, and import the buyer and seller account.
 You'll need their secrets:
 ```bash
-soroban config identity show buyer
-soroban config identity show seller
+soroban keys show buyer
+soroban keys show seller
 ```
 
 Now, if you followed the CLI walkthrough, the buyer will have the asset, and the seller will not.
