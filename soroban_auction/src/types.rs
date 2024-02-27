@@ -4,8 +4,8 @@ use soroban_sdk::{contracttype, Address, contracterror};
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct AuctionData {
     pub host: Address,
-    pub asset: Address,
-    pub counter_asset: Address,
+    pub token: Address,
+    pub counter_token: Address,
     pub auction_start_ledger: u32,
     pub bid_start_amount: i128,
     pub bid_incr_amount: i128,

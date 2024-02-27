@@ -10,23 +10,30 @@ pub struct AuctionContract;
 
 #[contractimpl]
 impl AuctionContract {
-
-    /// Setup a reverse Dutch Auction for a specified asset.
-    /// The auction host specifies what asset they want to buy, and in what asset they will pay.
-    /// The starting bid is set, and it will increase as per the provided parameters.
-    /// The bid will increase every X ledgers, by Y amount, for a maximum of Z times.
-    /// When a party holding the asset is willing to sell for that price, they call sell_asset and receive the price of that moment.
+    /// Setup a reverse Dutch Auction for an 'auction_token', to be exchanged for 'counter_token'.
+    /// Price will start low, and increase over time untill a sale is made, or a maximum price is reached
+    ///
+    /// # Arguments
+    ///
+    /// - `auction_token` - The token which initiator wants to buy
+    /// - `counter_token` - The token which initiator will pay
+    /// - `starting_bid` - Starting bid, in stroops
+    /// - `bid_incr_amount` - Amount the bid will increase each interval
+    /// - `bid_incr_times` - Maximum amount of times the bid will increase
+    /// - `bid_incr_interval` - Number of ledgers between bid increases
     pub fn setup_auction(env: Env, host: Address,
-                         auction_asset: Address, 
-                         counter_asset: Address, 
+                         auction_token: Address, 
+                         counter_token: Address, 
                          starting_bid: i128, 
                          bid_incr_amount:i128, 
                          bid_incr_times:u32, 
                          bid_incr_interval: u32)
                           -> Result<Status, Error> {
-        
 
-        // Require auth for the host of the auction, as it will pay for the asset it wants to buy
+
+
+
+        // Require auth for the host of the auction, as it will pay for the token it wants to buy
         host.require_auth();
 
         // Panic if the auction already has a State (Running, Fulfilled, Closed or Aborted)
@@ -43,11 +50,11 @@ impl AuctionContract {
         let required_ttl: u32 = bid_incr_times * bid_incr_interval;
         env.storage().instance().extend_ttl(required_ttl, required_ttl + 1000);
 
-        // Transfer enough counter-asset from the host to the contract to pay out the maximum prize.
+        // Transfer enough counter-token from the host to the contract to pay out the maximum prize.
         // The auction holds that balance until it is either Fullfilled or Aborted
         let max_increase: i128 = bid_incr_amount * bid_incr_times as i128;
         let max_price: i128 = starting_bid + max_increase;
-        let transfer = token::Client::new(&env, &counter_asset)
+        let transfer = token::Client::new(&env, &counter_token)
                                         .try_transfer(&host, &env.current_contract_address(), &max_price);
         if transfer.is_err() {
             return Ok(Status::TransferError)
@@ -56,8 +63,8 @@ impl AuctionContract {
         // Set auction details into storage
         let new_auction_data = AuctionData {
             host: host,
-            asset: auction_asset,
-            counter_asset: counter_asset,
+            token: auction_token,
+            counter_token: counter_token,
             auction_start_ledger: env.ledger().sequence(),
             bid_start_amount: starting_bid,
             bid_incr_amount: bid_incr_amount,
@@ -78,7 +85,7 @@ impl AuctionContract {
 
     }
 
-    /// Return the current price/bid that will be paid for the asset, upcoming changes and the maximum bid for the asset
+    /// Return the current bid that will be paid for the token, upcoming changes and the maximum bid for the token
     pub fn get_bid_info(env: Env, ) -> Result<BidInfo, Error> {
         
         // You can only query the price if the auction is Running
@@ -146,10 +153,12 @@ impl AuctionContract {
     }
 
 
-    /// A holder of the asset that is being bid for can sell it, and receive the current bid for it
-    pub fn sell_asset(env: Env, seller: Address ) -> Result<Status, Error> {
+    /// A holder of the token that is being bid for can sell it, and receive the current bid for it
+    /// # Arguments
+    /// - `seller` - Address that will sell the auction token and receive the payment
+    pub fn sell_token(env: Env, seller: Address ) -> Result<Status, Error> {
 
-        // You can only sell the asset if the auction is Running
+        // You can only sell the token if the auction is Running
         if  !env.storage().instance().has(&DataKey::State) {
             return Ok(Status::AuctionNotInitialised);
         } else {
@@ -160,26 +169,26 @@ impl AuctionContract {
             }
         }
 
-        // The seller needs to be authorised, since it will transfer the asset to the contract
+        // The seller needs to be authorised, since it will transfer the token to the contract
         seller.require_auth();
 
-        // Retrieve the auction data to read the asset and counter_asset data
+        // Retrieve the auction data to read the token and counter_token data
         let auction_data: AuctionData = env.storage().instance().get(&DataKey::AuctionData).unwrap();
 
         let current_price = Self::get_bid_info(env.clone()).unwrap().current_bid;
 
-        let auction_asset: Address = auction_data.asset;
-        let counter_asset: Address = auction_data.counter_asset;
+        let auction_token: Address = auction_data.token;
+        let counter_token: Address = auction_data.counter_token;
         
-        // The amount of the auction asset is currently hardcoded to 1 stroop (NFT)
+        // The amount of the auction token is currently hardcoded to 1 stroop (NFT)
         // Transfer that 1 stroop from the seller to the contract
-        let transfer = token::Client::new(&env, &auction_asset)
+        let transfer = token::Client::new(&env, &auction_token)
                                                 .try_transfer(&seller, &env.current_contract_address(), &1);
         if transfer.is_err() {
             return Ok(Status::TransferError)
         }
         // Pay the seller the current bid/price
-        let transfer = token::Client::new(&env, &counter_asset)
+        let transfer = token::Client::new(&env, &counter_token)
                                                 .try_transfer(&env.current_contract_address(), &seller, &current_price);
         if transfer.is_err() {
             return Ok(Status::TransferError)
@@ -197,7 +206,7 @@ impl AuctionContract {
 
     /// The auction host/organiser can close the auction.
     /// If this is done while the auction is still running, they receive back the funds they deposited.
-    /// If it is done after the auction was fulfilled, they receive the asset in question, and any remaining funds
+    /// If it is done after the auction was fulfilled, they receive the token in question, and any remaining funds
     pub fn close_auction(env: Env,) -> Result<Status, Error> {
 
         // Only allow termination if the auction is either running or finished
@@ -214,20 +223,20 @@ impl AuctionContract {
         // Load the auction data
         let auction_data: AuctionData = env.storage().instance().get(&DataKey::AuctionData).unwrap();
         let host: Address = auction_data.host;
-        let counter_asset: Address = auction_data.counter_asset;
+        let counter_token: Address = auction_data.counter_token;
 
         // Only the host of the auction can terminate it
         host.require_auth();
 
-        let counter_asset_balance = token::Client::new(&env, &counter_asset).balance(&env.current_contract_address());
+        let counter_token_balance = token::Client::new(&env, &counter_token).balance(&env.current_contract_address());
         
         let auction_state: State = env.storage().instance().get(&DataKey::State).unwrap();
 
         
         if auction_state == State::Running {
-            // Auction is running, so pay the counter_asset back to the host and set status to Aborted
-            let transfer = token::Client::new(&env, &counter_asset)
-                                            .try_transfer(&env.current_contract_address(), &host, &counter_asset_balance);
+            // Auction is running, so pay the counter_token back to the host and set status to Aborted
+            let transfer = token::Client::new(&env, &counter_token)
+                                            .try_transfer(&env.current_contract_address(), &host, &counter_token_balance);
             if transfer.is_err() {
                 return Ok(Status::TransferError)
             }
@@ -235,20 +244,20 @@ impl AuctionContract {
             return Ok(Status::AuctionAborted)
 
         } else if auction_state == State::Fulfilled {
-            // Auction is Fulfilled, so pay out the aquired asset
-            let auction_asset: Address = auction_data.asset;
-            let auction_asset_balance: i128 = token::Client::new(&env, &auction_asset).balance(&env.current_contract_address());
+            // Auction is Fulfilled, so pay out the aquired token
+            let auction_token: Address = auction_data.token;
+            let auction_token_balance: i128 = token::Client::new(&env, &auction_token).balance(&env.current_contract_address());
 
-            let transfer = token::Client::new(&env, &auction_asset)
-                                            .try_transfer(&env.current_contract_address(), &host, &auction_asset_balance);
+            let transfer = token::Client::new(&env, &auction_token)
+                                            .try_transfer(&env.current_contract_address(), &host, &auction_token_balance);
             if transfer.is_err() {
                 return Ok(Status::TransferError)
             }
 
             // If any funds remain, return them to the host
-            if counter_asset_balance > 0 {
-                let transfer = token::Client::new(&env, &counter_asset)
-                                            .try_transfer(&env.current_contract_address(), &host, &counter_asset_balance);
+            if counter_token_balance > 0 {
+                let transfer = token::Client::new(&env, &counter_token)
+                                            .try_transfer(&env.current_contract_address(), &host, &counter_token_balance);
                 if transfer.is_err() {
                     return Ok(Status::TransferError)
                 }

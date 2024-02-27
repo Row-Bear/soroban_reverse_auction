@@ -155,7 +155,7 @@ fn test_setup(){
     println!("The contract has {} of the auction asset and {} of the counter-asset.", asset_token.balance(&contract_id), counter_asset_token.balance(&contract_id));
 
     // Sell the asset to the auction and verify the correct status is returned. Log the sell price
-    let test_sell = auction_client.sell_asset(&seller);
+    let test_sell = auction_client.sell_token(&seller);
     assert_eq!(test_sell, Status::AuctionFulfilled);
 
     let sell_price = current_bid;
@@ -175,7 +175,7 @@ fn test_setup(){
     println!("");
     
     // Try to iniate sale again
-    let test_sell = auction_client.sell_asset(&seller);
+    let test_sell = auction_client.sell_token(&seller);
     assert_eq!(test_sell, Status::AuctionNotRunning);
 
     // Check if the balances are not changed
