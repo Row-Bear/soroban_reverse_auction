@@ -79,7 +79,7 @@ fn test_setup(){
     
     let test_max_bid = test_starting_bid + (test_bid_incr_amount * test_bid_incr_times as i128);
 
-    assert_eq!(test_setup, Status::AuctionStarted);
+    assert_eq!(test_setup, Status::Started);
     assert_eq!(counter_asset_token.balance(&contract_id), test_max_bid);
 
     // Attempt to set up the auction again, expected to fail since the auction is already running
@@ -90,7 +90,7 @@ fn test_setup(){
         &10, 
         &10,
         &10);
-    assert_eq!(test_setup, Status::AuctionAlreadyInitialised);
+    assert_eq!(test_setup, Status::AlreadyInitialised);
     
     println!("Auction created.");
 
@@ -156,7 +156,7 @@ fn test_setup(){
 
     // Sell the asset to the auction and verify the correct status is returned. Log the sell price
     let test_sell = auction_client.sell_token(&seller);
-    assert_eq!(test_sell, Status::AuctionFulfilled);
+    assert_eq!(test_sell, Status::Fulfilled);
 
     let sell_price = current_bid;
     
@@ -176,7 +176,7 @@ fn test_setup(){
     
     // Try to iniate sale again
     let test_sell = auction_client.sell_token(&seller);
-    assert_eq!(test_sell, Status::AuctionNotRunning);
+    assert_eq!(test_sell, Status::NotRunning);
 
     // Check if the balances are not changed
     assert_eq!(asset_token.balance(&seller), 0);
@@ -191,7 +191,7 @@ fn test_setup(){
 
     // Attempt to close the auction
     let test_close = auction_client.close_auction();
-    assert_eq!(test_close, Status::AuctionClosed);
+    assert_eq!(test_close, Status::Closed);
 
     // Verify the balances are as expected: Seller balances unchanged, contract balances reduces, host balances increased
     assert_eq!(asset_token.balance(&seller), 0);
@@ -210,7 +210,7 @@ fn test_setup(){
 
     // Attempt to close the auction a second time
     let test_close = auction_client.close_auction();
-    assert_eq!(test_close, Status::AuctionAlreadyClosed);
+    assert_eq!(test_close, Status::AlreadyClosed);
     
     // Verify the balances have not changed
     assert_eq!(asset_token.balance(&seller), 0);

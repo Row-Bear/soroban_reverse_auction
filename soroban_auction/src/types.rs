@@ -2,8 +2,8 @@ use soroban_sdk::{contracttype, Address, contracterror};
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-pub struct AuctionData {
-    pub host: Address,
+pub struct Data {
+    pub buyer: Address,
     pub token: Address,
     pub counter_token: Address,
     pub auction_start_ledger: u32,
@@ -40,31 +40,31 @@ pub enum State {
 #[repr(u32)]
 pub enum DataKey {
     State,
-    AuctionData,
+    Data,
 }
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum Status {
-    AuctionAlreadyInitialised,
-    AuctionAlreadyClosed,
-    AuctionStarted,
-    AuctionAborted,
-    AuctionClosed,
-    AuctionFulfilled,
-    AuctionNotInitialised,
-    AuctionNotRunning,
+    AlreadyInitialised,
+    AlreadyClosed,
+    Started,
+    Aborted,
+    Closed,
+    Fulfilled,
+    NotInitialised,
+    NotRunning,
     BidMustBePositive, 
     TransferError,   
-    AuctionReset,
+    Reset,
 }
 
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 #[repr(u32)]
 pub enum Error {
-    AuctionNotInitialised = 1,
-    AuctionAlreadyIntitialised= 2,
-    AuctionNotRunning = 3,
-    AuctionNotYetClosed = 4,
+    NotInitialised = 1,
+    AlreadyIntitialised= 2,
+    NotRunning = 3,
+    NotYetClosed = 4,
 }
