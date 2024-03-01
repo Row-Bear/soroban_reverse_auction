@@ -688,7 +688,7 @@
                         "key": {
                           "vec": [
                             {
-                              "symbol": "AuctionData"
+                              "symbol": "Data"
                             }
                           ]
                         },
@@ -753,18 +753,18 @@
                             },
                             {
                               "key": {
-                                "symbol": "counter_token"
+                                "symbol": "buyer"
                               },
                               "val": {
-                                "address": "CACMVW2KK4H5FZDFF2AUCAKQTEJMZZWJUIZF23XMRVYQBSXYLHZ6BKWN"
+                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
                               }
                             },
                             {
                               "key": {
-                                "symbol": "host"
+                                "symbol": "counter_token"
                               },
                               "val": {
-                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                                "address": "CACMVW2KK4H5FZDFF2AUCAKQTEJMZZWJUIZF23XMRVYQBSXYLHZ6BKWN"
                               }
                             },
                             {
@@ -2335,18 +2335,18 @@
                 },
                 {
                   "key": {
-                    "symbol": "counter_token"
+                    "symbol": "buyer"
                   },
                   "val": {
-                    "address": "CACMVW2KK4H5FZDFF2AUCAKQTEJMZZWJUIZF23XMRVYQBSXYLHZ6BKWN"
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
                   }
                 },
                 {
                   "key": {
-                    "symbol": "host"
+                    "symbol": "counter_token"
                   },
                   "val": {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                    "address": "CACMVW2KK4H5FZDFF2AUCAKQTEJMZZWJUIZF23XMRVYQBSXYLHZ6BKWN"
                   }
                 },
                 {
@@ -2382,7 +2382,7 @@
             "data": {
               "vec": [
                 {
-                  "symbol": "AuctionStarted"
+                  "symbol": "Started"
                 }
               ]
             }
@@ -2515,7 +2515,7 @@
             "data": {
               "vec": [
                 {
-                  "symbol": "AuctionAlreadyInitialised"
+                  "symbol": "AlreadyInitialised"
                 }
               ]
             }
@@ -8044,7 +8044,7 @@
             "data": {
               "vec": [
                 {
-                  "symbol": "AuctionFulfilled"
+                  "symbol": "Fulfilled"
                 }
               ]
             }
@@ -8565,7 +8565,7 @@
             "data": {
               "vec": [
                 {
-                  "symbol": "AuctionNotRunning"
+                  "symbol": "NotRunning"
                 }
               ]
             }
@@ -9268,7 +9268,7 @@
             "data": {
               "vec": [
                 {
-                  "symbol": "AuctionClosed"
+                  "symbol": "Closed"
                 }
               ]
             }
@@ -9943,7 +9943,7 @@
             "data": {
               "vec": [
                 {
-                  "symbol": "AuctionAlreadyClosed"
+                  "symbol": "AlreadyClosed"
                 }
               ]
             }

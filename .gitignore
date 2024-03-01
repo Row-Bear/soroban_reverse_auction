@@ -22,6 +22,7 @@ pnpm-debug.log*
 
 # Rust / Cargo
 target/
+test_snapshots/
 
 # Demo setup accounts
 accounts.txt
