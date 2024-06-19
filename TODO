@@ -1,0 +1,3 @@
+# Add support for running multiple auctions from 1 deployed contract
+# Update doc comments to format suggested by ElliotFriend
+# Add optional integration of Reflector in new auctions to allow automatic price/bid info in USD values.

@@ -223,14 +223,3 @@ fn test_setup(){
     println!("Tests completed!");
     println!("");
 }
-
-#[test]
-fn i128() {
-
-    let i:i128 = 1000;
-    let j:i128 = 100;
-
-    println!("First: {} has hi {} and lo {}", i, (i >> 64) as i64, i as u64);
-    println!("Second: {} has hi {} and lo {}", j, (j >> 64) as i64, j as u64);
-
-}
