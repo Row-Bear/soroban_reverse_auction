@@ -27,7 +27,8 @@ impl AuctionContract {
                          starting_bid: i128, 
                          bid_incr_amount:i128, 
                          bid_incr_times:u32, 
-                         bid_incr_interval: u32)
+                         bid_incr_interval: u32
+                        )
                           -> Result<Status, Error> {
 
         // Require auth for the buyer of the auction, as it will pay for the token it wants to buy
@@ -66,7 +67,7 @@ impl AuctionContract {
             bid_incr_amount: bid_incr_amount,
             bid_incr_interval: bid_incr_interval,
             bid_incr_times: bid_incr_times,
-            bid_max_amount: max_price
+            bid_max_amount: max_price,
         };
         env.storage().instance().set(&DataKey::Data, &new_auction_data);
 

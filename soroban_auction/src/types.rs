@@ -11,7 +11,7 @@ pub struct Data {
     pub bid_incr_amount: i128,
     pub bid_incr_interval: u32,
     pub bid_incr_times: u32,
-    pub bid_max_amount: i128
+    pub bid_max_amount: i128,
 }
 
 #[contracttype]
@@ -25,6 +25,7 @@ pub struct BidInfo {
     pub next_bid: i128,
     pub next_bid_ledger: u32,
 }
+
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
